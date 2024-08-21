@@ -1,11 +1,9 @@
 package com.project.shopapp2.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 
@@ -13,7 +11,8 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-
+@Getter
+@Setter
 public class UserDTO {
     @JsonProperty("fullname")
     private String fullName;
@@ -23,8 +22,12 @@ public class UserDTO {
 
     private String address;
 
-    @NotNull
+    @NotNull(message = "Password is required")
     private String password;
+
+    @NotNull(message = "Retype Password is required")
+    @JsonProperty("retype_password")
+    private String retypePassword;
 
     @JsonProperty("date_of_birth")
     private Date dateOfBirth;
@@ -35,6 +38,7 @@ public class UserDTO {
     @JsonProperty("google_account_id")
     private String googleAccountId;
 
+    @NotBlank(message = "Role ID is required")
     @JsonProperty("role_id")
     private String roleId;
 }
