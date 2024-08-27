@@ -3,6 +3,7 @@ package com.project.shopapp2.dtos;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Data
@@ -12,34 +13,37 @@ import lombok.*;
 @Getter
 @Setter
 public class OrderDTO {
+
     @JsonProperty("user_id")
-    @NotBlank(message = "userId is required")
-    @Min(value = 1, message = "userId length must be greater than 1")
-    private String userId;
+    @Min(value = 1, message = "User's ID must be > 0")
+    private Long userId;
 
     @JsonProperty("fullname")
-    @NotBlank(message = "fullName is required")
     private String fullName;
 
     private String email;
 
     @JsonProperty("phone_number")
+    @NotBlank(message = "Phone number is required")
+    @Size(min = 5, message = "Phone number must be at least 5 characters")
     private String phoneNumber;
 
     private String address;
 
     private String note;
 
-    @Min(value = 0, message = "Price must be greater than 0")
     @JsonProperty("total_money")
-    private float totalMoney;
+    @Min(value = 0, message = "Total money must be >= 0")
+    private Float totalMoney;
 
     @JsonProperty("shipping_method")
-    private float shippingMethod;
+    private String shippingMethod;
 
     @JsonProperty("shipping_address")
-    private float shippingAddress;
+    private String shippingAddress;
 
     @JsonProperty("payment_method")
-    private float paymentMethod;
+    private String paymentMethod;
+
+
 }

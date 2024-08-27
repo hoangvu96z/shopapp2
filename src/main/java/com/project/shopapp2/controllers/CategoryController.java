@@ -1,45 +1,60 @@
 package com.project.shopapp2.controllers;
 
-import com.project.shopapp2.dtos.CategoryDTO;
+import com.project.shopapp2.dtos.*;
+import com.project.shopapp2.models.Category;
+import com.project.shopapp2.services.CategoryService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/categories")
+@RequestMapping("${api.prefix}/categories")
+//@Validated
+//Dependency Injection
+@RequiredArgsConstructor
 public class CategoryController {
-    @GetMapping("")
-    public ResponseEntity<?> getAllCategories(
-            @RequestParam("page") int page,
-            @RequestParam("limit") int limit
-    ) {
-        return ResponseEntity.ok(String.format("Get all. page = %d, limit = %d", page, limit));
-    }
-
-    @GetMapping("/{id}")
-    public  ResponseEntity<String> getCategoryById(@PathVariable("id") String category_id) {
-        return ResponseEntity.ok("OK get category with id= "+category_id);
-    }
-
+    private final CategoryService categoryService;
     @PostMapping("")
-    public ResponseEntity<String> insertCategory(@Valid @RequestBody CategoryDTO categoryDTO, BindingResult result) {
-        if (result.hasErrors()) {
-            List<String> errorMess = result.getFieldErrors()
+    //Nếu tham số truyền vào là 1 object thì sao ? => Data Transfer Object = Request Object
+    public ResponseEntity<?> createCategory(
+            @Valid @RequestBody CategoryDTO categoryDTO,
+            BindingResult result) {
+        if(result.hasErrors()) {
+            List<String> errorMessages = result.getFieldErrors()
                     .stream()
                     .map(FieldError::getDefaultMessage)
                     .toList();
-            return ResponseEntity.badRequest().body(errorMess.toString());
+            return ResponseEntity.badRequest().body(errorMessages);
         }
-        return ResponseEntity.ok("NAME"+ categoryDTO);
-    }
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateById(@PathVariable Long id) {
-        return ResponseEntity.ok("This id "+ id);
+        categoryService.createCategory(categoryDTO);
+        return ResponseEntity.ok("Insert category successfully");
     }
 
+    //Hiện tất cả các categories
+    @GetMapping("")
+    public ResponseEntity<List<Category>> getAllCategories(
+            @RequestParam("page")     int page,
+            @RequestParam("limit")    int limit
+    ) {
+        List<Category> categories = categoryService.getAllCategories();
+        return ResponseEntity.ok(categories);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateCategory(
+            @PathVariable Long id,
+            @Valid @RequestBody CategoryDTO categoryDTO
+    ) {
+        categoryService.updateCategory(id, categoryDTO);
+        return ResponseEntity.ok("Update category successfully");
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteCategory(@PathVariable Long id) {
+        categoryService.deleteCategory(id);
+        return ResponseEntity.ok("Delete category with id: "+id+" successfully");
+    }
 }
